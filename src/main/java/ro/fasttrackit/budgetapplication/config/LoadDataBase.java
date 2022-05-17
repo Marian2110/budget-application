@@ -1,16 +1,15 @@
 package ro.fasttrackit.budgetapplication.config;
 
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ro.fasttrackit.budgetapplication.transaction.Transaction;
 import ro.fasttrackit.budgetapplication.transaction.TransactionRepository;
 
+@Slf4j
 @Configuration
 public class LoadDataBase {
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(LoadDataBase.class);
-
     @Bean
     CommandLineRunner initDataBase(TransactionRepository transactionRepository) {
         return args -> {
