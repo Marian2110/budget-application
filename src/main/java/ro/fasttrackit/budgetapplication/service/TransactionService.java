@@ -1,17 +1,27 @@
-package ro.fasttrackit.budgetapplication.transaction;
+package ro.fasttrackit.budgetapplication.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ro.fasttrackit.budgetapplication.entity.Transaction;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.UUID;
 
-@Slf4j
 @AllArgsConstructor
+@Slf4j
 @Service
 public class TransactionService {
     private final TransactionRepository transactionRepository;
+
+    @PostConstruct
+    private void insert() {
+        transactionRepository.save(new Transaction(UUID.randomUUID(), "apa", "BUY", 100.0));
+        transactionRepository.save(new Transaction(UUID.randomUUID(), "paine", "SELL", 120.0));
+        log.info("inserted");
+    }
 
     private EntityNotFoundException getEntityNotFoundException(Long id, String errorMessage) {
         EntityNotFoundException entityNotFoundException = new EntityNotFoundException(

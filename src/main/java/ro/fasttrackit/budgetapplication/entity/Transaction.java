@@ -1,10 +1,12 @@
-package ro.fasttrackit.budgetapplication.transaction;
+package ro.fasttrackit.budgetapplication.entity;
 
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table
@@ -15,8 +17,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public class Transaction {
     @Id
-    @GeneratedValue
-    private Long id;
+    @Type(type = "uuid-char")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @Column(nullable = false, length = 50)
     private String product;
@@ -27,11 +30,11 @@ public class Transaction {
     @Column(nullable = false)
     private Double amount;
 
-    public Transaction(String product, String type, Double amount) {
-        this.product = product;
-        this.type = type;
-        this.amount = amount;
-    }
+//    public Transaction(String product, String type, Double amount) {
+//        this.product = product;
+//        this.type = type;
+//        this.amount = amount;
+//    }
 
     @Override
     public boolean equals(Object o) {

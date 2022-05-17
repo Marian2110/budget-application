@@ -1,8 +1,10 @@
-package ro.fasttrackit.budgetapplication.transaction;
+package ro.fasttrackit.budgetapplication.controller.transaction;
 
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ro.fasttrackit.budgetapplication.entity.Transaction;
+import ro.fasttrackit.budgetapplication.service.TransactionService;
 
 import java.util.List;
 
