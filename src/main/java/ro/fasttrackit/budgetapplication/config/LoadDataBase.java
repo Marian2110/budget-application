@@ -1,4 +1,4 @@
-package ro.fasttrackit.budgetapplication.transaction.config;
+package ro.fasttrackit.budgetapplication.config;
 
 import org.slf4j.Logger;
 import org.springframework.boot.CommandLineRunner;

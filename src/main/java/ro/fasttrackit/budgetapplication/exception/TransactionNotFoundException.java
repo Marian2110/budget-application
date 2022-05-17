@@ -1,4 +1,4 @@
-package ro.fasttrackit.budgetapplication.transaction;
+package ro.fasttrackit.budgetapplication.exception;
 
 public class TransactionNotFoundException extends RuntimeException {
     public TransactionNotFoundException(Long id) {
