@@ -2,39 +2,39 @@ package ro.fasttrackit.budgetapplication.entity;
 
 import lombok.*;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.Type;
+import ro.fasttrackit.budgetapplication.utils.TransactionType;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity
 @Table
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Transaction {
     @Id
-    @Type(type = "uuid-char")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "transaction_generator")
+    @SequenceGenerator(name = "transaction_generator", sequenceName = "transaction_seq")
+    private Long id;
 
     @Column(nullable = false, length = 50)
+    @NotBlank(message = "Product name is required")
     private String product;
 
-    @Column(nullable = false, length = 20)
-    private String type;
+    @Column(nullable = false)
+    @NotNull(message = "Transaction type is required")
+    private TransactionType type;
 
     @Column(nullable = false)
+    @Positive(message = "Amount must be positive")
+    @NotNull(message = "Amount is required")
     private Double amount;
-
-//    public Transaction(String product, String type, Double amount) {
-//        this.product = product;
-//        this.type = type;
-//        this.amount = amount;
-//    }
 
     @Override
     public boolean equals(Object o) {

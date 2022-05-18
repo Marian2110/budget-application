@@ -4,11 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ro.fasttrackit.budgetapplication.entity.Transaction;
+import ro.fasttrackit.budgetapplication.exception.EntityNotFoundException;
+import ro.fasttrackit.budgetapplication.utils.TransactionType;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.UUID;
 
 @AllArgsConstructor
 @Slf4j
@@ -18,15 +18,14 @@ public class TransactionService {
 
     @PostConstruct
     private void insert() {
-        transactionRepository.save(new Transaction(UUID.randomUUID(), "apa", "BUY", 100.0));
-        transactionRepository.save(new Transaction(UUID.randomUUID(), "paine", "SELL", 120.0));
+        transactionRepository.save(new Transaction(1L, "apa", TransactionType.BUY, 100.0));
+        transactionRepository.save(new Transaction(2L, "paine", TransactionType.SELL, 120.0));
         log.info("inserted");
     }
 
     private EntityNotFoundException getEntityNotFoundException(Long id, String errorMessage) {
         EntityNotFoundException entityNotFoundException = new EntityNotFoundException(
-                "Transaction with id " + id + " not found");
-
+                id, Transaction.class.getSimpleName());
         log.error(errorMessage, id, entityNotFoundException);
         return entityNotFoundException;
     }

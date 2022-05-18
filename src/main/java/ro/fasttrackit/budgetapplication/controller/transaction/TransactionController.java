@@ -2,15 +2,18 @@ package ro.fasttrackit.budgetapplication.controller.transaction;
 
 
 import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ro.fasttrackit.budgetapplication.entity.Transaction;
 import ro.fasttrackit.budgetapplication.service.TransactionService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/vi/transactions")
+@RequestMapping("api/v1/transactions")
 @AllArgsConstructor
+@Validated
 public class TransactionController {
     private final TransactionService transactionService;
 
@@ -25,7 +28,7 @@ public class TransactionController {
     }
 
     @PostMapping
-    public Transaction addTransaction(@RequestBody Transaction transaction) {
+    public Transaction addTransaction( @Valid @RequestBody Transaction transaction) {
         return transactionService.save(transaction);
     }
 
