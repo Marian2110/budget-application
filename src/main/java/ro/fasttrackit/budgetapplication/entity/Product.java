@@ -3,11 +3,12 @@ package ro.fasttrackit.budgetapplication.entity;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
-import ro.fasttrackit.budgetapplication.utils.TransactionType;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table
@@ -16,37 +17,36 @@ import java.util.Objects;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Transaction {
+public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(nullable = false)
-    private TransactionType type;
+    private String name;
 
-    @Column(nullable = false)
-    private Double amount;
+    @Column
+    private String description;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column
-    private Boolean confirmed = false;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @UpdateTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime modifiedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @OneToMany(mappedBy = "product")
+    @ToString.Exclude
+    private Set<Transaction> transactions;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Transaction that = (Transaction) o;
+        Product that = (Product) o;
         return id != null && Objects.equals(id, that.id);
     }
 
@@ -54,4 +54,6 @@ public class Transaction {
     public int hashCode() {
         return getClass().hashCode();
     }
+
 }
+

@@ -2,6 +2,7 @@ package ro.fasttrackit.budgetapplication.controller.transaction;
 
 
 import lombok.AllArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ro.fasttrackit.budgetapplication.entity.Transaction;
