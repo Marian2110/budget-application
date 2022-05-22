@@ -43,7 +43,7 @@ public class UserService {
                     // TODO hashing password
                     existingUser.setPassword(user.getPassword());
                     existingUser.setRoles(user.getRoles());
-                    return userRepository.save(user);
+                    return userRepository.save(existingUser);
                 })
                 .orElseThrow(() -> EntityNotFoundException.forEntity(User.class, id));
     }
