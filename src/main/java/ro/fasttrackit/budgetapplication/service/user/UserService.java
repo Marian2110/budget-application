@@ -60,15 +60,28 @@ public class UserService {
 
     public User addRole(Long id, Long roleId) {
         log.info("Adding role {} to user {}", roleId, id);
+        User user = getUser(id);
         Role role = roleService.getRole(roleId);
-        log.info("Role {}", role);
+        List<Role> roles = getRoles(id);
+        roles.add(role);
+        user.setRoles(roles);
+        return userRepository.save(user);
+    }
 
+    public List<Role> getRoles(Long id) {
         return userRepository.findById(id)
-                .map(existingUser -> {
-                    existingUser.setRoles(Set.of(role));
-                    return userRepository.save(existingUser);
-                })
+                .map(User::getRoles)
                 .orElseThrow(() -> EntityNotFoundException.forEntity(User.class, id));
+    }
+
+    public User removeRole(Long id, Long roleId) {
+        log.info("Removing role {} from user {}", roleId, id);
+        User user = getUser(id);
+        Role role = roleService.getRole(roleId);
+        List<Role> roles = getRoles(id);
+        roles.remove(role);
+        user.setRoles(roles);
+        return userRepository.save(user);
     }
 
 }

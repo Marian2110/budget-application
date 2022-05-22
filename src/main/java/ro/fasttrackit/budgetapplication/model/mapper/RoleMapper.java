@@ -5,6 +5,8 @@ import org.mapstruct.Mapping;
 import ro.fasttrackit.budgetapplication.model.dto.RoleDTO;
 import ro.fasttrackit.budgetapplication.model.entity.Role;
 
+import java.util.List;
+
 @Mapper
 public interface RoleMapper {
 
@@ -14,4 +16,5 @@ public interface RoleMapper {
     RoleDTO mapToDTO(Role role);
 
 
+    List<RoleDTO> mapToDTOs(List<Role> roles);
 }

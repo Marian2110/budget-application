@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 @Getter
 @AllArgsConstructor
 public class ProductDTO {
+    private Long id;
 
     @NotBlank(message = "Name is mandatory")
     @Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")

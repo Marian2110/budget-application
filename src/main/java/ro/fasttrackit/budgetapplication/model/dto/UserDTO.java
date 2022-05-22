@@ -11,6 +11,8 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class UserDTO {
+    private Long id;
+
     @NotBlank
     @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
     private String username;

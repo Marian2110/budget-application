@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -21,6 +22,10 @@ public class Role {
 
     @Column(unique = true, nullable = false, length = 20)
     private String name;
+
+    @ManyToMany(mappedBy = "roles")
+    @ToString.Exclude
+    private List<User> users;
 
     @Override
     public boolean equals(Object o) {

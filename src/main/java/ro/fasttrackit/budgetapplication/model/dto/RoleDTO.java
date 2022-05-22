@@ -9,7 +9,6 @@ import javax.validation.constraints.Size;
 @Getter
 @AllArgsConstructor
 public class RoleDTO {
-
     private Long id;
 
     @NotBlank(message = "Role name is required")

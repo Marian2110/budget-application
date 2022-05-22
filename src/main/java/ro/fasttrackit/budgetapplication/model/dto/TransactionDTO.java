@@ -11,6 +11,8 @@ import javax.validation.constraints.Positive;
 @Getter
 @AllArgsConstructor
 public class TransactionDTO {
+    private Long id;
+
     @NotNull
     @NotBlank(message = "Wrong type")
     private String type;

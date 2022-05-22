@@ -3,7 +3,8 @@ package ro.fasttrackit.budgetapplication.controller.role;
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ro.fasttrackit.budgetapplication.model.entity.Role;
+import ro.fasttrackit.budgetapplication.model.dto.RoleDTO;
+import ro.fasttrackit.budgetapplication.model.mapper.RoleMapper;
 import ro.fasttrackit.budgetapplication.service.role.RoleService;
 
 import java.util.List;
@@ -16,28 +17,31 @@ public class RoleController {
 
     private final RoleService roleService;
 
+    private final RoleMapper roleMapper;
+
     @GetMapping
-    public List<Role> getAllRoles() {
-        return roleService.getRoles();
+    public List<RoleDTO> getAllRoles() {
+        return roleMapper.mapToDTOs(roleService.getRoles());
     }
 
-    @GetMapping(path = "/{id}")
-    public Role getRoleById(@PathVariable Long id) {
-        return roleService.getRole(id);
+    @GetMapping("/{id}")
+    public RoleDTO getRoleById(@PathVariable("id") Long id) {
+        return roleMapper.mapToDTO(roleService.getRole(id));
     }
 
     @PostMapping
-    public Role addRole(@RequestBody Role role) {
-        return roleService.createRole(role);
+    public RoleDTO createRole(@RequestBody RoleDTO roleDTO) {
+        return roleMapper.mapToDTO(roleService.createRole(roleMapper.mapToEntity(roleDTO)));
     }
 
-    @PutMapping(path = "/{id}")
-    public Role updateRole(@PathVariable Long id, @RequestBody Role role) {
-        return roleService.updateRole(id, role);
+    @PutMapping("/{id}")
+    public RoleDTO updateRole(@PathVariable("id") Long id, @RequestBody RoleDTO roleDTO) {
+        return roleMapper.mapToDTO(roleService.updateRole(id, roleMapper.mapToEntity(roleDTO)));
     }
 
-    @DeleteMapping(path = "/{id}")
-    public Role deleteRole(@PathVariable Long id) {
-        return roleService.deleteRole(id);
+    @DeleteMapping("/{id}")
+    public RoleDTO deleteRole(@PathVariable("id") Long id) {
+        return roleMapper.mapToDTO(roleService.deleteRole(id));
     }
+
 }
