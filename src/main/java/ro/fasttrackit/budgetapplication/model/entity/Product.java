@@ -1,52 +1,53 @@
-package ro.fasttrackit.budgetapplication.entity;
+package ro.fasttrackit.budgetapplication.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
-import ro.fasttrackit.budgetapplication.utils.TransactionType;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
-@Table
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Transaction {
+public class Product {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private TransactionType type;
+    @Column(nullable = false, length = 50)
+    private String name;
 
-    @Column(nullable = false)
-    private Double amount;
+    @Column
+    private String description;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column
-    private Boolean confirmed = false;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @UpdateTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime modifiedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private Set<Transaction> transactions;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Transaction that = (Transaction) o;
+        Product that = (Product) o;
         return id != null && Objects.equals(id, that.id);
     }
 
@@ -55,3 +56,4 @@ public class Transaction {
         return getClass().hashCode();
     }
 }
+

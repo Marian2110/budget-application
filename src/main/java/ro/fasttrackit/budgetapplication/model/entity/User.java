@@ -1,5 +1,6 @@
-package ro.fasttrackit.budgetapplication.entity;
+package ro.fasttrackit.budgetapplication.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -8,7 +9,6 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table
 @Getter
 @Setter
 @ToString
@@ -16,18 +16,24 @@ import java.util.Set;
 @NoArgsConstructor
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Set<UserRole> userRoles;
+    private Set<Transaction> transactions;
+
+    @ManyToMany
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @ToString.Exclude
+    private Set<Role> roles;
 
     @Override
     public boolean equals(Object o) {

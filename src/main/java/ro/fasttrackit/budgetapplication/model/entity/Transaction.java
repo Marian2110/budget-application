@@ -1,52 +1,56 @@
-package ro.fasttrackit.budgetapplication.entity;
+package ro.fasttrackit.budgetapplication.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import ro.fasttrackit.budgetapplication.utils.TransactionType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
-@Table
 @Getter
 @Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
-
+public class Transaction {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private TransactionType type;
 
-    @Column
-    private String description;
+    @Column(nullable = false)
+    private Double amount;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private Boolean confirmed = false;
 
-    @UpdateTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime modifiedAt;
-
-    @OneToMany(mappedBy = "product")
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
     @ToString.Exclude
-    private Set<Transaction> transactions;
+    private Product product;
+
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
+    private User user;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Product that = (Product) o;
+        Transaction that = (Transaction) o;
         return id != null && Objects.equals(id, that.id);
     }
 
@@ -54,6 +58,4 @@ public class Product {
     public int hashCode() {
         return getClass().hashCode();
     }
-
 }
-

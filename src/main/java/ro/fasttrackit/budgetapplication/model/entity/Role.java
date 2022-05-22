@@ -1,4 +1,4 @@
-package ro.fasttrackit.budgetapplication.entity;
+package ro.fasttrackit.budgetapplication.model.entity;
 
 
 import lombok.*;
@@ -6,25 +6,21 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
-@Table
 @Getter
 @Setter
 @ToString
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false, length = 20)
     private String name;
-
-    @OneToMany(mappedBy = "role")
-    @ToString.Exclude
-    private Set<UserRole> userRoles;
 
     @Override
     public boolean equals(Object o) {
