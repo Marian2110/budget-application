@@ -2,14 +2,14 @@ package ro.fasttrackit.budgetapplication.service.user;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ro.fasttrackit.budgetapplication.exception.EntityNotFoundException;
 import ro.fasttrackit.budgetapplication.model.entity.Role;
 import ro.fasttrackit.budgetapplication.model.entity.User;
-import ro.fasttrackit.budgetapplication.exception.EntityNotFoundException;
 import ro.fasttrackit.budgetapplication.service.role.RoleService;
 
 import java.util.List;
-import java.util.Set;
 
 @AllArgsConstructor
 @Slf4j
@@ -17,10 +17,13 @@ import java.util.Set;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
     private RoleService roleService;
 
     public User addUser(User user) {
         log.info("Creating user {}", user);
+        user.setPassword("{bcrypt}" + passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -41,7 +44,7 @@ public class UserService {
                 .map(existingUser -> {
                     existingUser.setUsername(user.getUsername());
                     // TODO hashing password
-                    existingUser.setPassword(user.getPassword());
+                    existingUser.setPassword("{bcrypt}" + passwordEncoder.encode(user.getPassword()));
                     existingUser.setRoles(user.getRoles());
                     return userRepository.save(existingUser);
                 })

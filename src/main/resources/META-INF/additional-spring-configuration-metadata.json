@@ -19,6 +19,11 @@
       "name": "transaction.generate-report.export-file-name",
       "type": "java.lang.String",
       "description": "File name of transaction report."
+    },
+    {
+      "name": "api.v1.base-path",
+      "type": "java.lang.String",
+      "description": "Base path of API v1."
     }
   ]
 }

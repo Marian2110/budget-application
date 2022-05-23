@@ -6,6 +6,8 @@ import org.mapstruct.factory.Mappers;
 import ro.fasttrackit.budgetapplication.model.dto.TransactionDTO;
 import ro.fasttrackit.budgetapplication.model.entity.Transaction;
 
+import java.util.List;
+
 @Mapper
 public interface TransactionMapper {
     TransactionMapper INSTANCE = Mappers.getMapper(TransactionMapper.class);
@@ -17,4 +19,6 @@ public interface TransactionMapper {
     @Mapping(source = "productId", target = "product.id")
     @Mapping(source = "userId", target = "user.id")
     Transaction mapToEntity(TransactionDTO transactionDTO);
+
+    List<TransactionDTO> mapToDTOs(List<Transaction> transactions);
 }

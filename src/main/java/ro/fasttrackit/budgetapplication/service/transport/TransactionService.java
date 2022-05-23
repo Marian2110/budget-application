@@ -6,8 +6,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ro.fasttrackit.budgetapplication.model.entity.Transaction;
 import ro.fasttrackit.budgetapplication.exception.EntityNotFoundException;
+import ro.fasttrackit.budgetapplication.model.entity.Transaction;
+import ro.fasttrackit.budgetapplication.utils.Criteria;
 import ro.fasttrackit.budgetapplication.utils.TransactionInfo;
 
 import java.io.IOException;
@@ -28,6 +29,8 @@ import java.util.Map;
 public class TransactionService {
     private final TransactionRepository transactionRepository;
 
+    private final TransactionDao transactionDao;
+
     public List<Transaction> getTransactions() {
         return transactionRepository.findAll();
     }
@@ -38,7 +41,7 @@ public class TransactionService {
                 .orElseThrow(() -> EntityNotFoundException.forEntity(Transaction.class, id));
     }
 
-    public Transaction save(Transaction transaction) {
+    public Transaction add(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
 
@@ -162,7 +165,7 @@ public class TransactionService {
         return report;
     }
 
-    public List<Transaction> findAllSortedAndPaginated(String sortBy, String order, Integer page, Integer size) {
+    public List<Transaction> find(String sortBy, String order, Integer page, Integer size) {
         log.info("sortBy: " + sortBy + " order: " + order + " page: " + page + " size: " + size);
         List<Sort.Order> orders = new ArrayList<>();
         orders.add(new Sort.Order(Sort.Direction.fromString(order), sortBy));
@@ -170,4 +173,20 @@ public class TransactionService {
         Pageable pageable = PageRequest.of(page, size, sort);
         return transactionRepository.findAll(pageable).getContent();
     }
+
+    public List<Transaction> find(Criteria criteria) {
+        List<Sort.Order> orders = new ArrayList<>();
+        criteria.getSortOptions().forEach(sortOption -> {
+            orders.add(new Sort.Order(Sort.Direction.fromString(sortOption.getDirection()), sortOption.getProperty()));
+        });
+        Sort sort = Sort.by(orders);
+        Pageable pageable = PageRequest.of(criteria.getPage() - 1, criteria.getSize(), sort);
+        return transactionRepository.findAll(pageable).getContent();
+    }
+
+    public List<Transaction> findUsingDao(Criteria criteria) {
+        return transactionDao.findUsingCriteriaBuilder(criteria);
+    }
+
+
 }

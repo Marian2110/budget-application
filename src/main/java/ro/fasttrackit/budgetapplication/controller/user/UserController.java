@@ -1,6 +1,5 @@
 package ro.fasttrackit.budgetapplication.controller.user;
 
-
 import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -53,18 +52,18 @@ public class UserController {
     }
 
     // Work in progress
-    @GetMapping(path = "/{id}/role")
+    @GetMapping(path = "/{id}/roles")
     public List<RoleDTO> getRoles(@PathVariable Long id) {
         return roleMapper.mapToDTOs(userService.getRoles(id));
     }
 
-    @PostMapping(path = "/{id}/role")
+    @PostMapping(path = "/{id}/roles")
     public UserDTO addRole(@PathVariable Long id, @RequestBody RoleDTO roleDTO) {
         return userMapper.mapToDTO(userService.addRole(id, roleDTO.getId()));
     }
 
-    @DeleteMapping(path = "/{id}/role")
-    public UserDTO deleteRole(@PathVariable Long id, @RequestBody RoleDTO roleDTO) {
-        return userMapper.mapToDTO(userService.removeRole(id, roleDTO.getId()));
+    @DeleteMapping(path = "/{id}/roles/{roleId}")
+    public UserDTO deleteRole(@PathVariable Long id, @PathVariable Long roleId) {
+        return userMapper.mapToDTO(userService.removeRole(id, roleId));
     }
 }

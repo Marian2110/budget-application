@@ -5,17 +5,17 @@ import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ro.fasttrackit.budgetapplication.model.dto.TransactionDTO;
-import ro.fasttrackit.budgetapplication.model.entity.Transaction;
-import ro.fasttrackit.budgetapplication.service.transport.TransactionService;
-import ro.fasttrackit.budgetapplication.utils.TransactionInfo;
 import ro.fasttrackit.budgetapplication.model.mapper.TransactionMapper;
+import ro.fasttrackit.budgetapplication.service.transport.TransactionService;
+import ro.fasttrackit.budgetapplication.utils.Criteria;
+import ro.fasttrackit.budgetapplication.utils.TransactionInfo;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("api/v1/transactions")
+@RequestMapping(path = "api/v1/transactions")
 @AllArgsConstructor
 @Validated
 public class TransactionController {
@@ -23,24 +23,28 @@ public class TransactionController {
     private final TransactionMapper transactionMapper;
 
     @GetMapping(path = "{id}")
-    public Transaction getTransaction(@PathVariable Long id) {
-        return transactionService.findById(id);
+    public TransactionDTO getTransaction(@PathVariable Long id) {
+        return transactionMapper.mapToDTO(transactionService.findById(id));
     }
 
     @PostMapping
-    public Transaction addTransaction(@Valid @RequestBody TransactionDTO transactionDTO) {
-        Transaction transaction = transactionMapper.mapToEntity(transactionDTO);
-        return transactionService.save(transaction);
+    public TransactionDTO addTransaction(@Valid @RequestBody TransactionDTO transactionDTO) {
+        return transactionMapper.mapToDTO(
+                transactionService.add(
+                        transactionMapper.mapToEntity(transactionDTO)));
     }
 
     @PutMapping(path = "{id}")
-    public Transaction updateTransaction(@PathVariable Long id, @RequestBody Transaction transaction) {
-        return transactionService.update(id, transaction);
+    public TransactionDTO updateTransaction(@PathVariable Long id, @Valid @RequestBody TransactionDTO transactionDTO) {
+        return transactionMapper.mapToDTO(
+                transactionService.update(
+                        id,
+                        transactionMapper.mapToEntity(transactionDTO)));
     }
 
     @DeleteMapping(path = "{id}")
-    public Transaction deleteTransaction(@PathVariable Long id) {
-        return transactionService.delete(id);
+    public TransactionDTO deleteTransaction(@PathVariable Long id) {
+        return transactionMapper.mapToDTO(transactionService.delete(id));
     }
 
     @GetMapping("/reports/type")
@@ -53,13 +57,9 @@ public class TransactionController {
         return transactionService.getTransactionsGroupedByProduct();
     }
 
-    @GetMapping()
-    public List<Transaction> findAllSortedAndPaginated(@RequestParam(required = false) String sortBy,
-                                                       @RequestParam(required = false) String order,
-                                                       @RequestParam(required = false) Integer page,
-                                                       @RequestParam(required = false) Integer size) {
-
-        return transactionService.findAllSortedAndPaginated(sortBy, order, page, size);
+    @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = "application/json")
+    public List<TransactionDTO> find(@Valid @RequestBody Criteria criteria) {
+        return transactionMapper.mapToDTOs(transactionService.findUsingDao(criteria));
     }
 
 }

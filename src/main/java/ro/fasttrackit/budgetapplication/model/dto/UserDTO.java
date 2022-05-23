@@ -30,8 +30,4 @@ public class UserDTO {
     @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$", message = "Password is not complex enough")
     private String password;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Size(min = 1, max = 3)
-    @NotNull
-    private List<Integer> roleIds;
 }
