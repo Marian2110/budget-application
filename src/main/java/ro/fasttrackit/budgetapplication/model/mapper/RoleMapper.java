@@ -17,4 +17,12 @@ public interface RoleMapper {
 
 
     List<RoleDTO> mapToDTOs(List<Role> roles);
+
+    Role mapFromId(String id);
+
+    List<Role> mapFromIds(List<String> ids);
+
+    String mapToId(Role role);
+
+    List<String> mapToIds(List<Role> roles);
 }

@@ -16,9 +16,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findByConfirmedTrueAndCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 
-
-
-
     @Query("SELECT t FROM Transaction t " +
             "WHERE (:startDate is null and :endDate is null or t.createdAt BETWEEN :startDate AND :endDate)" +
             "AND (:startDate is null or t.createdAt > :startDate)" +
@@ -34,12 +31,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                               Pageable pageable);
 
 
-
-
     @Modifying
     @Transactional
     @Query("UPDATE Transaction t SET t.confirmed = true WHERE t.confirmed = false")
     void confirmAll();
-
-
 }

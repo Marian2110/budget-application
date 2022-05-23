@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "api/v1/transactions")
+@RequestMapping(path = "${api.v1.base-path}/transactions")
 @AllArgsConstructor
 @Validated
 public class TransactionController {

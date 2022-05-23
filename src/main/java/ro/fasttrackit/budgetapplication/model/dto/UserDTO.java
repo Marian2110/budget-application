@@ -30,4 +30,6 @@ public class UserDTO {
     @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$", message = "Password is not complex enough")
     private String password;
 
+    private List<String> roles;
+
 }
