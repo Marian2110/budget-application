@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ro.fasttrackit.budgetapplication.model.dto.TransactionDTO;
 import ro.fasttrackit.budgetapplication.model.mapper.TransactionMapper;
-import ro.fasttrackit.budgetapplication.service.transport.TransactionService;
+import ro.fasttrackit.budgetapplication.service.transaction.TransactionService;
 import ro.fasttrackit.budgetapplication.utils.Criteria;
 import ro.fasttrackit.budgetapplication.utils.TransactionInfo;
 

@@ -1,4 +1,4 @@
-package ro.fasttrackit.budgetapplication.service.transport;
+package ro.fasttrackit.budgetapplication.service.transaction;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import ro.fasttrackit.budgetapplication.model.entity.Transaction;
-import ro.fasttrackit.budgetapplication.utils.Criteria;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +15,9 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     List<Transaction> findByConfirmedTrueAndCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+
+
 
     @Query("SELECT t FROM Transaction t " +
             "WHERE (:startDate is null and :endDate is null or t.createdAt BETWEEN :startDate AND :endDate)" +

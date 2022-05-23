@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
-import ro.fasttrackit.budgetapplication.service.transport.TransactionService;
+import ro.fasttrackit.budgetapplication.service.transaction.TransactionService;
 
 @Configuration
 @EnableConfigurationProperties
