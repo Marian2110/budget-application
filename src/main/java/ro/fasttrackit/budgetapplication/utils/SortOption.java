@@ -1,13 +1,14 @@
 package ro.fasttrackit.budgetapplication.utils;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
-@AllArgsConstructor
+@Builder
 @ToString
+@AllArgsConstructor
 public class SortOption {
     private String direction;
     private String property;

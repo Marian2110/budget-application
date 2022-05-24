@@ -2,6 +2,7 @@ package ro.fasttrackit.budgetapplication.controller.transaction;
 
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ro.fasttrackit.budgetapplication.model.dto.TransactionDTO;
@@ -58,8 +59,8 @@ public class TransactionController {
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = "application/json")
-    public List<TransactionDTO> find(@Valid @RequestBody Criteria criteria) {
-        return transactionMapper.mapToDTOs(transactionService.findUsingDao(criteria));
+    public Page<TransactionDTO> find(@Valid @RequestBody Criteria criteria) {
+        return transactionMapper.toDtoPage(transactionService.findUsingDao(criteria));
     }
 
 }

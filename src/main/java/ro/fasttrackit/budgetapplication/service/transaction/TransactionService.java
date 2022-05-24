@@ -2,6 +2,7 @@ package ro.fasttrackit.budgetapplication.service.transaction;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -67,7 +68,6 @@ public class TransactionService {
 
     public void generateReport(String filePath) {
         log.info("Generating report for all users");
-        Map<String, List<TransactionInfo>> report = new HashMap<>();
 
         Month month = LocalDateTime.now().getMonth() == Month.JANUARY ? Month.DECEMBER : LocalDateTime.now().getMonth().minus(1);
         Year year = LocalDateTime.now().getMonth() == Month.JANUARY ? Year.of(LocalDateTime.now().getYear() - 1) : Year.of(LocalDateTime.now().getYear());
@@ -77,7 +77,8 @@ public class TransactionService {
 
         String dateString = startDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         String fileName = filePath + "-" + dateString + ".txt";
-        mapTransactionsToUsers(report, startDate, endDate);
+
+        Map<String, List<TransactionInfo>> report = mapTransactionsToUsers(startDate, endDate);
         writeFile(filePath, report);
     }
 
@@ -85,12 +86,12 @@ public class TransactionService {
         StringBuilder sb = new StringBuilder();
         report.forEach((username, transactions) -> {
             sb.append("User: ").append(username).append("\n");
-            transactions.forEach(transactionInfo -> {
-                sb.append("\tType: ").append(transactionInfo.getType()).append(" Amount: ").append(transactionInfo.getAmount()).append("\n");
-            });
+            transactions.forEach(transactionInfo -> sb.append("\tType: ")
+                    .append(transactionInfo.getType()).append(" Amount: ")
+                    .append(transactionInfo.getAmount()).append("\n"));
             sb.append("\n");
-
         });
+
         try {
             Files.write(Paths.get(filePath), sb.toString().getBytes());
 
@@ -99,7 +100,8 @@ public class TransactionService {
         }
     }
 
-    private void mapTransactionsToUsers(Map<String, List<TransactionInfo>> report, LocalDateTime startDate, LocalDateTime endDate) {
+    private Map<String, List<TransactionInfo>> mapTransactionsToUsers(LocalDateTime startDate, LocalDateTime endDate) {
+        Map<String, List<TransactionInfo>> report = new HashMap<>();
         transactionRepository.findByConfirmedTrueAndCreatedAtBetween(startDate, endDate)
                 .forEach(transaction -> {
                     TransactionInfo transactionInfo = TransactionInfo.builder()
@@ -115,13 +117,13 @@ public class TransactionService {
                         report.put(transaction.getUser().getUsername(), transactionInfos);
                     }
                 });
+        return report;
     }
 
     public void confirmTransactions() {
         log.info("Confirming transactions");
         transactionRepository.confirmAll();
     }
-
 
     public Map<String, List<TransactionInfo>> getTransactionsGroupedByType() {
         Map<String, List<TransactionInfo>> report = new HashMap<>();
@@ -174,19 +176,18 @@ public class TransactionService {
         return transactionRepository.findAll(pageable).getContent();
     }
 
-    public List<Transaction> find(Criteria criteria) {
+    public void findUsingCriteria(Criteria criteria) {
         List<Sort.Order> orders = new ArrayList<>();
-        criteria.getSortOptions().forEach(sortOption -> {
-            orders.add(new Sort.Order(Sort.Direction.fromString(sortOption.getDirection()), sortOption.getProperty()));
-        });
+        criteria.getSortOptions().forEach(sortOption -> orders
+                .add(new Sort.Order(
+                        Sort.Direction.fromString(sortOption.getDirection()),
+                        sortOption.getProperty())));
         Sort sort = Sort.by(orders);
         Pageable pageable = PageRequest.of(criteria.getPage() - 1, criteria.getSize(), sort);
-        return transactionRepository.findAll(pageable).getContent();
+        transactionRepository.findAll(pageable).getContent();
     }
 
-    public List<Transaction> findUsingDao(Criteria criteria) {
+    public Page<Transaction> findUsingDao(Criteria criteria) {
         return transactionDao.findUsingCriteriaBuilder(criteria);
     }
-
-
 }

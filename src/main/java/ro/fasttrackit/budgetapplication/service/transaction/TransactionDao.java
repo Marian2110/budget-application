@@ -2,13 +2,19 @@ package ro.fasttrackit.budgetapplication.service.transaction;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import ro.fasttrackit.budgetapplication.model.entity.Transaction;
 import ro.fasttrackit.budgetapplication.utils.Criteria;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,20 +29,16 @@ public class TransactionDao {
         StringBuilder query = new StringBuilder("SELECT t FROM Transaction t ");
         if (criteria.getFilterOptions() != null) {
             query.append("WHERE ");
-            criteria.getFilterOptions().forEach(filterOption -> {
-                query
-                        .append(filterOption.getFieldName())
-                        .append(" ").append(filterOption.getOperator())
-                        .append(" ").append(filterOption.getValue()).append(" ");
-            });
+            criteria.getFilterOptions().forEach(filterOption -> query
+                    .append(filterOption.getFieldName())
+                    .append(" ").append(filterOption.getOperator())
+                    .append(" ").append(filterOption.getValue()).append(" "));
         }
         if (criteria.getSortOptions() != null) {
             query.append("ORDER BY ");
-            criteria.getSortOptions().forEach(sortOption -> {
-                query
-                        .append(sortOption.getProperty()).append(" ")
-                        .append(sortOption.getDirection()).append(" ");
-            });
+            criteria.getSortOptions().forEach(sortOption -> query
+                    .append(sortOption.getProperty()).append(" ")
+                    .append(sortOption.getDirection()).append(" "));
         }
 
         if (criteria.getSize() > 0) {
@@ -50,17 +52,10 @@ public class TransactionDao {
         return entityManager.createQuery(query.toString(), Transaction.class).getResultList();
     }
 
-    public List<Transaction> findUsingCriteriaBuilder(Criteria criteria) {
+    public Page<Transaction> findUsingCriteriaBuilder(Criteria criteria) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        countQuery.select(cb.count(countQuery.from(Transaction.class)));
-        TypedQuery<Long> countTypedQuery = entityManager.createQuery(countQuery);
-        Long totalCount = countTypedQuery.getSingleResult();
-        int totalPages = (int) Math.ceil(totalCount / criteria.getSize());
-
         CriteriaQuery<Transaction> criteriaQuery = cb.createQuery(Transaction.class);
-
         Root<Transaction> transaction = criteriaQuery.from(Transaction.class);
 
         List<Predicate> predicates = new ArrayList<>();
@@ -97,37 +92,34 @@ public class TransactionDao {
                     }
             );
         }
-
-        List<Order> orders = new ArrayList<>();
+        List<Sort.Order> orderList = new ArrayList<>();
         if (criteria.getSortOptions() != null) {
-            criteria.getSortOptions().forEach(sortOption -> {
-
-                if (sortOption.getDirection().equalsIgnoreCase("asc")) {
-                    orders.add(cb.asc(transaction.get(sortOption.getProperty())));
-                }
-                if (sortOption.getDirection().equalsIgnoreCase("desc")) {
-                    orders.add(cb.desc(transaction.get(sortOption.getProperty())));
-                }
-            });
+            criteria.getSortOptions().forEach(sortOption -> orderList
+                    .add(new Sort.Order(
+                            Sort.Direction.fromString(sortOption.getDirection()),
+                            sortOption.getProperty())));
         }
 
         Predicate[] predicatesArray = new Predicate[predicates.size()];
         predicates.toArray(predicatesArray);
 
         criteriaQuery.where(predicatesArray);
-        criteriaQuery.orderBy(orders);
 
-        TypedQuery<Transaction> typedQuery = entityManager.createQuery(criteriaQuery);
+        PageRequest pageRequest = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(orderList));
 
-        if (criteria.getPage() < totalPages) {
-            typedQuery.setFirstResult((criteria.getPage() - 1) * criteria.getSize());
-            typedQuery.setMaxResults(criteria.getSize());
-        } else {
-            typedQuery.setFirstResult((totalPages - 1) * criteria.getSize());
-            typedQuery.setMaxResults(totalPages * criteria.getSize());
-        }
-        log.info("Query: {}", typedQuery.unwrap(org.hibernate.Query.class).getQueryString());
-        log.info(" totalPages " + totalPages + " " + criteria.getPage() + " " + criteria.getSize());
-        return typedQuery.getResultList();
+        List<Transaction> resultList = entityManager.createQuery(criteriaQuery)
+                .setFirstResult((int) pageRequest.getOffset())
+                .setMaxResults(pageRequest.getPageSize())
+                .getResultList();
+
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+
+        countQuery.where(predicatesArray);
+        Root<Transaction> transactionRootCount = countQuery.from(Transaction.class);
+        countQuery.select(cb.count(transactionRootCount)).where(predicatesArray);
+        Long count = entityManager.createQuery(countQuery).getSingleResult();
+        System.out.println("Total count: " + count);
+
+        return new PageImpl<>(resultList, pageRequest, count);
     }
 }
