@@ -11,10 +11,7 @@ import ro.fasttrackit.budgetapplication.model.entity.Transaction;
 import ro.fasttrackit.budgetapplication.utils.Criteria;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +89,19 @@ public class TransactionDao {
                     }
             );
         }
+
+        List<Order> orders = new ArrayList<>();
+        if (criteria.getSortOptions() != null) {
+            criteria.getSortOptions().forEach(sortOption -> {
+                if (sortOption.getDirection().equalsIgnoreCase("ASC")) {
+                    orders.add(cb.asc(transaction.get(sortOption.getProperty())));
+                }
+                if (sortOption.getDirection().equalsIgnoreCase("DESC")) {
+                    orders.add(cb.desc(transaction.get(sortOption.getProperty())));
+                }
+            });
+        }
+
         List<Sort.Order> orderList = new ArrayList<>();
         if (criteria.getSortOptions() != null) {
             criteria.getSortOptions().forEach(sortOption -> orderList
@@ -104,6 +114,7 @@ public class TransactionDao {
         predicates.toArray(predicatesArray);
 
         criteriaQuery.where(predicatesArray);
+        criteriaQuery.orderBy(orders);
 
         PageRequest pageRequest = PageRequest.of(criteria.getPage(), criteria.getSize(), Sort.by(orderList));
 

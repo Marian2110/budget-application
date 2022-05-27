@@ -2,12 +2,14 @@ package ro.fasttrackit.budgetapplication;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class BudgetApplication {
+@EnableEurekaClient
+public class BudgetServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(BudgetApplication.class, args);
+        SpringApplication.run(BudgetServiceApplication.class, args);
     }
 }

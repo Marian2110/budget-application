@@ -4,8 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -25,6 +24,9 @@ import java.util.Objects;
 @ExtendWith(MockitoExtension.class)
 @RunWith(PowerMockRunner.class)
 class TransactionServiceTest {
+    @Spy
+    @InjectMocks
+    TransactionService transactionService;
 
     @Test
     void testFindUsingDao() {
@@ -73,13 +75,13 @@ class TransactionServiceTest {
         TransactionService transactionService = PowerMockito
                 .spy(new TransactionService(transactionRepository, transactionDao));
 
-        LocalDateTime firstDate = LocalDateTime.now();
-        LocalDateTime secondDate = LocalDateTime.now();
+//        LocalDateTime firstDate = LocalDateTime.now();
+//        LocalDateTime secondDate = LocalDateTime.now();
         String path = "path";
 
         HashMap<String, List<TransactionInfo>> report = new HashMap<>();
         PowerMockito.doReturn(report)
-                .when(transactionService, "mapTransactionsToUsers", firstDate, secondDate);
+                .when(transactionService, "mapTransactionsToUsers", ArgumentMatchers.any(), ArgumentMatchers.any());
 
         PowerMockito.doNothing()
                 .when(transactionService, "writeFile", path, report);
@@ -88,7 +90,7 @@ class TransactionServiceTest {
         transactionService.generateReport(path);
 
         //then
-        PowerMockito.verifyPrivate(transactionService).invoke("mapTransactionsToUsers", firstDate, secondDate);
+        PowerMockito.verifyPrivate(transactionService).invoke("mapTransactionsToUsers", ArgumentMatchers.any(), ArgumentMatchers.any());
         PowerMockito.verifyPrivate(transactionService).invoke("writeFile", path, report);
 
         /*
